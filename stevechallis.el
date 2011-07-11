@@ -92,6 +92,15 @@
       (remq 'process-kill-buffer-query-function
             kill-buffer-query-functions))
 
+;; Line duplication function and key binding
+(defun eemklinks-duplicate-this-line ()
+ "Duplicate the current line (without any changes to the kill ring)."
+ (interactive)
+ (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
+   (save-excursion (beginning-of-line) (insert-before-markers line "\n"))))
+
+(global-set-key (kbd "C-c d") 'eemklinks-duplicate-this-line)
+
 ;;
 ;;
 ;; YAsnippet
