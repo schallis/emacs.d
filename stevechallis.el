@@ -150,15 +150,19 @@
 ;; Always want these files open on startup
 (find-file (concat org-directory "/notes.org"))
 (find-file (concat org-directory "/snippets.org"))
+(find-file (concat org-directory "/gtd.org"))
 
 ;; Org templates for quick capture
 (global-set-key (kbd "C-c c") 'org-capture)
 (setq org-capture-templates
       '(("t" "Todo" entry
-	 (file+headline "~/org/notes.org" "Incoming") "* TODO %?")
+	 (file+headline "~/org/gtd.org" "Incoming")
+         "* %?\n - [ ]" :prepend t)
+        ("m" "Conversation" entry
+	 (file+headline "~/org/goals.org" "Conversations")
+         "* %?" :prepend t)
         ("s" "Short-Term Goal" entry
-	 (file+headline "~/org/goals.org" "Short Term")
-	 "* %?")
+	 (file+headline "~/org/goals.org" "Short Term") "* %?")
         ("m" "Medium-Term Goal" entry
 	 (file+headline "~/org/goals.org" "Medium Term") "* %?")
         ("l" "Long-Term Goal" entry
