@@ -234,8 +234,8 @@
 ;;
 ;;
 
-(add-to-list 'load-path "/Users/stevechallis/Documents/repos/slime/")
-(add-to-list 'load-path "/Users/stevechallis/Documents/repos/slime/contrib")
+(add-to-list 'load-path "~/Documents/repos/slime/")
+(add-to-list 'load-path "~/Documents/repos/slime/contrib")
 (require 'slime)
 ;;(slime-setup '(slime-repl))
 ;; 1337 version
@@ -319,7 +319,15 @@
 ;;                                                   (format "(swank:start-server %S)\n" port-file)))
 ;;                                          (clojure ("clj"))))
 
-(add-to-list 'load-path "/Users/stevechallis/.emacs.d/el-get/el-get")
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
+   (lambda (s)
+     (end-of-buffer)
+     (eval-print-last-sexp))))
+
 (require 'el-get)
 (setq el-get-sources '(clojure-mode session sicp 
                        (:name zencoding-mode
