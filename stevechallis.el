@@ -59,7 +59,7 @@
 
 ;; Fill wrap to ~80 chars
 ;; Use M-q to reformat paragraph
-(auto-fill-mode 1)
+;;(auto-fill-mode 1)
 (show-paren-mode 1)
 
 ;; Remove annoying black box in the cocoa mac build
@@ -100,6 +100,9 @@
    (save-excursion (beginning-of-line) (insert-before-markers line "\n"))))
 
 (global-set-key (kbd "C-c d") 'eemklinks-duplicate-this-line)
+
+;; Rainbow parens
+(require 'rainbow-delimiters)
 
 ;;
 ;;
@@ -147,6 +150,9 @@
 ;; Idle timeout value for org-clock timetracking
 (setq org-clock-idle-time 15)
 
+;; todo subheading shortcut
+(global-set-key (kbd "C-c s") 'org-insert-todo-subheading)
+
 ;; Always want these files open on startup
 (find-file (concat org-directory "/notes.org"))
 (find-file (concat org-directory "/snippets.org"))
@@ -155,11 +161,14 @@
 ;; Org templates for quick capture
 (global-set-key (kbd "C-c c") 'org-capture)
 (setq org-capture-templates
-      '(("t" "Todo" entry
+      '(("t" "Todo" checkitem
 	 (file+headline "~/org/gtd.org" "Incoming")
-         "* %?\n - [ ]" :prepend t)
-        ("m" "Conversation" entry
-	 (file+headline "~/org/goals.org" "Conversations")
+         "- [ ] %?" :prepend t)
+        ("m" "Multi Todo" checkitem
+	 (file+headline "~/org/gtd.org" "Incoming")
+         "- [ ] [0/1] %?\n  - [ ]" :prepend t)
+        ("c" "Conversation" entry
+	 (file+headline "~/org/gtd.org" "Conversations")
          "* %?" :prepend t)
         ("s" "Short-Term Goal" entry
 	 (file+headline "~/org/goals.org" "Short Term") "* %?")
@@ -213,7 +222,46 @@
 
 ;; Allow LDAP w/sudo to any ^v.* server
 (set-default 'tramp-default-proxies-alist
-	 '((".*.mcr1.gradwell.com" "\\`root\\'" "/ssh:steve.challis@%h:")))
+             '((".*.mcr1.gradwell.com" "\\`root\\'" "/ssh:steve.challis@%h:")
+               ("sandbox" "\\`root\\'" "/ssh:sandbox@%h:")))
+
+;;
+;;
+;; Flymake
+;;
+;;
+
+(when (load "flymake" t)
+  (defun flymake-pylint-init ()
+    (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                       'flymake-create-temp-inplace))
+           (local-file (file-relative-name
+                        temp-file
+                        (file-name-directory buffer-file-name))))
+      (list "epylint" (list local-file))))
+  
+  (add-to-list 'flymake-allowed-file-name-masks
+               '("\\.py\\'" flymake-pylint-init)))
+
+;; Underline errors
+(custom-set-faces
+ '(flymake-errline ((((class color)) (:underline "red"))))
+ '(flymake-warnline ((((class color)) (:underline "yellow")))))
+
+;; Quickly show next error
+(defun my-flymake-show-next-error ()
+    (interactive)
+    (flymake-goto-next-error)
+    (flymake-display-err-menu-for-current-line))
+
+;; Show errors in the modeline to save having to hover over the error
+(defun my-flymake-show-help ()
+  (interactive)
+  (when (get-char-property (point) 'flymake-overlay)
+    (let ((help (get-char-property (point) 'help-echo)))
+      (if help (message "%s" help)))))
+
+(add-hook 'post-command-hook 'my-flymake-show-help)
 
 ;;
 ;;
@@ -257,7 +305,10 @@
 ;;
 ;;
 
-(add-hook 'clojure-mode-hook (lambda () (slime-mode t)))
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (slime-mode t)
+            (rainbow-delimiters-mode)))
 
 ;;
 ;; Work around autodoc breakage with Clojure
@@ -286,6 +337,45 @@
                       (slime-autodoc-mode 0))
              (progn (setq slime-use-autodoc-mode t)
                     (slime-autodoc-mode 1)))))
+
+
+;;
+;;
+;; HTML
+;;
+;;
+
+(add-hook 'html-mode-hook
+          (lambda ()
+            (auto-fill-mode -1)
+            (message "HTMLMODE")))
+
+;;
+;;
+;; Javascript
+;;
+;;
+
+(add-hook 'javascript-mode-hook
+          (lambda ()
+            (setq require-final-newline -1)))
+
+;;
+;;
+;; Python
+;;
+;;
+
+(setq ipython-command "/usr/local/bin/ipython")
+(require 'ipython)
+
+(global-set-key (kbd "C-x p") 'py-shell)
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (turn-on-eldoc-mode)
+            (flymake-mode 1)
+            (auto-complete-mode)))
 
 ;;
 ;;
