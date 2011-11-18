@@ -30,15 +30,6 @@
 ;;
 ;;
 
-;; Backups
-
-(setq backup-directory-alist `(("." . "~/.emacs.d/saves")))
-(setq backup-by-copying-when-linked t)
-
-;; Font size
-;; The value is in 1/10pt, so 100 will give you 10pt, etc.
-(set-face-attribute 'default nil :height 130)
-
 ;; Hide menu/scroll bar by default
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -72,7 +63,7 @@
 (show-paren-mode 1)
 
 ;; Remove annoying black box in the cocoa mac build
-(setq visible-bell nil)
+(setq visible-bell t)
 
 ;; Enable narrowing
 (put 'narrow-to-region 'disabled nil)
@@ -86,6 +77,9 @@
 ;; remap M-3 key to a hash (mac keyboards don't have hash displayed)
 (global-unset-key (kbd "M-3"))
 (global-set-key (kbd "M-3") '(lambda() (interactive) (insert-string "#")))
+
+;; Quick comment/uncomment shortcut
+(global-set-key (kbd "C-c =") 'comment-or-uncomment-region)
 
 ;; Shortcut for fullscreen (in cocoa emacs)
 (global-set-key (kbd "C-c f") 'ns-toggle-fullscreen)
@@ -395,12 +389,6 @@
             (setq js-indent-level 4)
             (setq require-final-newline -1)))
 
-(add-hook 'espresso-mode-hook
-          (lambda ()
-            (setq espresso-indent-level 4)
-            (setq js-indent-level 4)
-            (setq require-final-newline -1)))
-
 ;;
 ;;
 ;; Python
@@ -478,8 +466,8 @@
 ;;
 
 (erc-autojoin-mode t)
-(setq erc-autojoin-channels-alist
-      '((".*" "#zonza" "#banter")))
+ (setq erc-autojoin-channels-alist
+       '((".*" "#zonza" "#banter")))
 
 
 ;; (defun erc-start-or-switch ()
@@ -492,7 +480,7 @@
   (interactive)
   (erc :server "dev-hson-1" :port 6667 :nick "schallis" :full-name "Steve Challis"))
 
-;;(start-erc)
+(start-erc)
 
 (global-set-key (kbd "C-c i") '(lambda() (interactive) (erc-iswitchb)))
 

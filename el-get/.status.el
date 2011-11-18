@@ -1,0 +1,1 @@
+(:clojure-mode "installed" :session "installed" :sicp "installed" :zencoding-mode "installed" :multi-term "installed")
